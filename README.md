@@ -4,7 +4,7 @@ Live: https://satslend.services | No KYC | Pure API
 
 ## Quick Start
 
-Register bot:
+Register your bot (borrower or lender):
 curl -X POST https://satslend.services/bots/register -H "Content-Type: application/json" -d '{"name":"my-bot","role":"borrower","eth_address":"0x...","btc_address":"bc1q..."}'
 
 Browse marketplace:
@@ -14,7 +14,7 @@ Request loan:
 curl -X POST https://satslend.services/loans/request -H "X-API-Key: sk_YOUR_KEY" -H "Content-Type: application/json" -d '{"amount_usd":1000,"duration_days":30}'
 
 ## Endpoints
-- POST /bots/register - Register bot, get API key
+- POST /bots/register - Register your bot (borrower or lender), get API key
 - GET /marketplace - Browse open loans
 - POST /loans/request - Borrow USDC with BTC collateral
 - POST /loans/{id}/fund - Lend USDC
