@@ -1,34 +1,64 @@
-# SATS.LEND API - Bitcoin M2M Lending for AI Agents
+# SATS.LEND - Bitcoin Lending API for AI Agents and Bots
 
-Live: https://satslend.services | No KYC | Pure API
+Live: https://satslend.services | No KYC | Pure API | Bitcoin Mainnet
 
-## Quick Start
+## Quick Start - Borrower
 
-Register your bot (borrower or lender):
-curl -X POST https://satslend.services/bots/register -H "Content-Type: application/json" -d '{"name":"my-bot","role":"borrower","eth_address":"0x...","btc_address":"bc1q..."}'
+Register:
+curl -X POST https://satslend.services/bots/register -H "Content-Type: application/json" -d '{"name":"my-bot","role":"borrower","eth_address":"0x...","btc_address":"bc1q...","referral_code":"PHLAUNCH"}'
 
-Browse marketplace:
-curl https://satslend.services/marketplace
+Request loan (auto-matched with best lender):
+curl -X POST https://satslend.services/loans/request -H "X-API-Key: sk_YOUR_KEY" -d '{"amount_usd":1000,"duration_days":30,"max_interest_rate_pct":10}'
 
-Request loan:
-curl -X POST https://satslend.services/loans/request -H "X-API-Key: sk_YOUR_KEY" -H "Content-Type: application/json" -d '{"amount_usd":1000,"duration_days":30}'
+Then: Send collateral_btc BTC to escrow_address from response. Receive USDC automatically.
 
-## Endpoints
-- POST /bots/register - Register your bot (borrower or lender), get API key
-- GET /marketplace - Browse open loans
-- POST /loans/request - Borrow USDC with BTC collateral
-- POST /loans/{id}/fund - Lend USDC
-- POST /loans/{id}/repay - Repay loan
-- GET /loans/{id} - Loan status and LTV
-- POST /referral/generate - Get referral code
-- GET /platform/stats - Live platform stats
+Repay before maturity:
+curl -X POST https://satslend.services/loans/LOAN_ID/repay -H "X-API-Key: sk_YOUR_KEY" -d '{"usdc_txhash":"0x..."}'
+
+## Quick Start - Lender
+
+Register + post lend order:
+curl -X POST https://satslend.services/orders/lend -H "X-API-Key: sk_YOUR_KEY" -d '{"amount_usd":10000,"interest_rate_pct":8,"max_duration_days":90}'
+
+Auto-matched with borrowers. Receive USDC + interest at maturity.
+
+## LTV Monitoring
+- Below 73pct: Safe
+- 73-80pct: Margin Call - top up collateral
+- Above 80pct: Auto-liquidation
 
 ## Fees
-- Matching: 0.2%
-- Liquidation: 0.5%
-- Referral: 5 USD signup + 0.05% ongoing
+- Origination: 0.3pct
+- Repayment: 0.1pct
+- Liquidation: 0.5pct
+- Referral signup: 5 USD
+- Referral ongoing: 0.05pct per loan forever in BTC
 
-## Links
-- OpenAPI: https://satslend.services/openapi.json
-- Stats: https://satslend.services/platform/stats
-- Closing txs: https://github.com/gigollo/satslend-transactions
+## Referral Program
+Every bot gets a unique code. Earn 5 USD per signup + 0.05pct of every loan forever in BTC.
+curl -X POST https://satslend.services/referral/generate -H "X-API-Key: sk_YOUR_KEY"
+
+## Self-Executing Loans
+5 pre-signed Bitcoin txs stored on GitHub per loan.
+If SATS.LEND disappears: broadcast disaster tx from github.com/gigollo/satslend-transactions
+No server needed to close a loan.
+
+## All Endpoints
+POST /bots/register - Register bot
+GET  /marketplace - Open loan requests
+GET  /orders - Open lend orders
+POST /orders/lend - Post lend order
+POST /loans/request - Request loan
+POST /loans/ID/fund - Fund loan
+POST /loans/ID/repay - Repay loan
+GET  /loans/ID - Loan status and LTV
+POST /referral/generate - Get referral code
+GET  /referral/leaderboard - Top earners
+GET  /platform/stats - Live stats
+GET  /openapi.json - Full API spec
+
+## Promo
+Code: PHLAUNCH - 50pct off first 3 loans
+
+Built on Bitcoin. No trust required.
+satslend.services
