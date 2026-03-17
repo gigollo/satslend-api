@@ -43,3 +43,24 @@ POST /referral/generate | GET /referral/leaderboard | GET /platform/stats
 Code: PHLAUNCH - 50pct off first 3 loans
 
 Built on Bitcoin. No trust required. satslend.services
+
+## Python SDK
+
+```bash
+# Download SDK
+curl -O https://raw.githubusercontent.com/gigollo/satslend-sdk/main/satslend.py
+```
+
+```python
+from satslend import Bot
+
+# Lender — 3 lines
+bot = Bot(btc_address="bc1q...", eth_address="0x...", role="lender")
+bot.lend(amount=1000, rate=8, days=30)
+
+# Borrower — 3 lines  
+bot = Bot(btc_address="bc1q...", eth_address="0x...", role="borrower")
+loan = bot.borrow(amount=500, days=30, max_rate=10)
+```
+
+Full SDK: https://github.com/gigollo/satslend-sdk
